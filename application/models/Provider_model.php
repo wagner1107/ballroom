@@ -84,4 +84,17 @@ class Provider_model extends CI_Model {
         }
     }
 
+    public function loginFornecedor($email, $pass){
+        $this->db->select("*");
+        $this->db->from('tb_provider_login');
+        $this->db->where("email", $email);
+        $this->db->where("password", $pass );
+        $query = $this->db->get();
+
+        if($query->num_rows() >= 1){
+            return $query->result();
+        }
+        return false;
+    }
+
 }

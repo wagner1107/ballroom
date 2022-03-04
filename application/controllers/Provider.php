@@ -6,10 +6,11 @@ class Provider extends CI_Controller {
 	function __construct(){
 		parent::__construct();
         $this->load->model('Provider_model');
+		
 	}
 
 	public function index(){
-		echo "Executando Codeigniter";
+		echo "Voce precisa realizar o login na rota loginFornecedores ";
 	}
 
 	private function validarCadastro($tabela, $campo, $valor){
@@ -17,6 +18,13 @@ class Provider extends CI_Controller {
 	}
 
 	public function buscar(){
+
+		$user = $this->session->userdata('email');
+
+
+		if(empty($user)){
+			redirect("provider/index");
+		}
 		
 		$email = null;
 		if(isset($_POST['email']) && $_POST['email'] != null ){
@@ -142,6 +150,27 @@ class Provider extends CI_Controller {
 		} else {
 			echo json_encode(array("status" => false, "description" => "Por favor, enviar o numeoro da conta para realizar a exclusao"));
 		} 
+	}
+
+	public function loginFornecedor(){
+		
+		if( isset($_POST['email']) && $_POST['email'] != null 
+			&& isset($_POST['password']) && $_POST['password'] != null){
+
+			$email = addslashes($_POST['email']);
+			$pass = addslashes(md5($_POST['password']));
+
+			$usuario_cadastrado = $this->Provider_model->loginFornecedor($email, $pass);
+
+			$dados['email'] = $usuario_cadastrado[0]->email;
+			$dados['id'] = $usuario_cadastrado[0]->id;
+
+			$this->session->set_userdata($dados);
+
+			echo json_encode(array( "status" => true, "Fornecedores" => $dados['email'] . " - Logado com sucesso ")); exit;
+
+		}
+		
 	}
 
 }
