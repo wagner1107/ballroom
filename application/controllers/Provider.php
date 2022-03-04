@@ -162,6 +162,11 @@ class Provider extends CI_Controller {
 
 			$usuario_cadastrado = $this->Provider_model->loginFornecedor($email, $pass);
 
+			if( !is_object($usuario_cadastrado[0]) ){
+				echo json_encode(array( "status" => false, "Fornecedores" => "Dados Incorretos")); exit;
+			};
+
+
 			$dados['email'] = $usuario_cadastrado[0]->email;
 			$dados['id'] = $usuario_cadastrado[0]->id;
 
