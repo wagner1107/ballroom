@@ -18,12 +18,7 @@ class Provider_model extends CI_Model {
         return false;
     }
 
-    public function cadastrar($tabela, $dados){
-        $this->db->insert($tabela, $dados);
-        return $this->db->insert_id();
-    }
-
-    public function deletar($tabela, $campo, $condicao, $dados){
+    public function deletarDados($tabela, $campo, $condicao, $dados){
 
         $this->db->where($campo, $condicao);
         $this->db->update($tabela, $dados);
@@ -31,70 +26,56 @@ class Provider_model extends CI_Model {
         return true;
     }
 
-    public function buscar($tabela, $campo, $condicao = null, $join = null ){
-        $this->db->select("*");
-        $this->db->from($tabela);
-
-        if($join != null){
-            $this->db->join("tb_provider_data", "tb_provider_data.id_provider_login = tb_provider_login.id", "left");
-            $this->db->join("tb_provider_bank", "tb_provider_bank.id_provider_login = tb_provider_login.id","left");
-        }
-        
-        if($condicao != null ){
-            $this->db->where($campo, $condicao);
-        }
-        $query = $this->db->get();
-
-        if($query->num_rows() >= 1){
-            return $query->result();
-        }
-        return false;
-    }
-
     public function cadastrarDados($dados){
 
         $this->db->select("*");
         $this->db->from('tb_provider_data');
         $this->db->where('id_provider_login', $dados['id_provider_login']);
+        $this->db->where('deleted_at', null);
         $query = $this->db->get();
 
         if($query->num_rows() >= 1){
             $this->db->where('id_provider_login', $dados['id_provider_login']);
+            $this->db->where('deleted_at', null);
             $this->db->update('tb_provider_data', $dados);
             return true;
         } else {
+			$dados['created_at'] = date("Y-m-d H:i:s");
             $this->db->insert('tb_provider_data', $dados);
             return $this->db->insert_id();
         }
     }
 
-    public function cadastrarDadosBancarios($dados){
+    public function buscar($id){
 
-        $this->db->where('account', $dados['account']);
-        $query = $this->db->get('tb_provider_bank');
+        $this->db->where('tb_provider_login.id', $id);
 
-        if($query->num_rows() >= 1){
-
-            $this->db->where('account', $dados['account']);
-            $this->db->update('tb_provider_bank', $dados);
-            return true;
-        } else {
-            $this->db->insert('tb_provider_bank', $dados);
-            return $this->db->insert_id();
-        }
-    }
-
-    public function loginFornecedor($email, $pass){
-        $this->db->select("*");
-        $this->db->from('tb_provider_login');
-        $this->db->where("email", $email);
-        $this->db->where("password", $pass );
         $query = $this->db->get();
-
+        
         if($query->num_rows() >= 1){
             return $query->result();
         }
         return false;
     }
+
+    public function cadastrarDadosBancarios($dados){
+
+        $this->db->where('account', $dados['account']);
+        $this->db->where('deleted_at', null);
+        $query = $this->db->get('tb_provider_bank');
+
+        if($query->num_rows() >= 1){
+            $this->db->where('account', $dados['account']);
+            $this->db->where('deleted_at', null);
+            $this->db->update('tb_provider_bank', $dados);
+            return true;
+        } else {
+			$dados['created_at'] = date('Y-m-d H:i:s');
+            $this->db->insert('tb_provider_bank', $dados);
+            return $this->db->insert_id();
+        }
+    }
+
+
 
 }
