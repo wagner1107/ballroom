@@ -47,12 +47,12 @@ class Login_model extends CI_Model {
         $this->db->select("tb_provider_bank.account_digit");
         $this->db->select("tb_provider_bank.type_account");
         $this->db->from("tb_provider_login");
-        $this->db->join("tb_provider_bank", "tb_provider_bank.id_provider_login = tb_provider_login.id");
+        $this->db->join("tb_provider_bank", "tb_provider_bank.id_provider_login = tb_provider_login.id", "left");
         $this->db->where('tb_provider_login.id', $id);
         $this->db->where('tb_provider_bank.deleted_at', NULL);
 
         $query = $this->db->get();
-        
+
         if($query->num_rows() >= 1){
             return $query->result();
         }

@@ -22,7 +22,7 @@ class Login extends CI_Controller {
 			$pass = addslashes(md5($_POST['password']));
 
 			$usuario_cadastrado = $this->Login_model->loginFornecedor($email, $pass);
-                
+
 			if( $usuario_cadastrado == false || !is_object($usuario_cadastrado[0] ) ){
 				echo json_encode(array( "status" => false, "Fornecedores" => "Dados Incorretos ou login inativo")); exit;
 			};

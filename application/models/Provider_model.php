@@ -18,9 +18,9 @@ class Provider_model extends CI_Model {
         return false;
     }
 
-    public function deletarDados($tabela, $campo, $condicao, $dados){
+    public function deletarDados($tabela, $campo, $where, $dados){
 
-        $this->db->where($campo, $condicao);
+        $this->db->where($campo, $where);
         $this->db->update($tabela, $dados);
 
         return true;
@@ -48,7 +48,9 @@ class Provider_model extends CI_Model {
 
     public function buscar($id){
 
-        $this->db->where('tb_provider_login.id', $id);
+        $this->db->select("*");
+        $this->db->from('tb_provider_bank');
+        $this->db->where('id_provider_login', $id);
 
         $query = $this->db->get();
         
@@ -60,9 +62,10 @@ class Provider_model extends CI_Model {
 
     public function cadastrarDadosBancarios($dados){
 
+        $this->db->from('tb_provider_bank');
         $this->db->where('account', $dados['account']);
         $this->db->where('deleted_at', null);
-        $query = $this->db->get('tb_provider_bank');
+        $query = $this->db->get();
 
         if($query->num_rows() >= 1){
             $this->db->where('account', $dados['account']);

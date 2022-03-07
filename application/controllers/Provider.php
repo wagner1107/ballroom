@@ -7,7 +7,7 @@ Esse controller possui CRUD do Fornecedor
 
 class Provider extends CI_Controller {
 
-	public int $id  = 10;
+	public int $id;
 	public string $email;
 
 	function __construct(){
@@ -15,8 +15,8 @@ class Provider extends CI_Controller {
         $this->load->model('Provider_model');
         $this->load->model('Login_model');
 
-		$this->id = $this->session->userdata('id');
-		$this->email = $this->session->userdata('email');
+		$this->id = $this->session->userdata('id') ?  $this->session->userdata('id') : 0 ;
+		$this->email = $this->session->userdata('email') ? $this->session->userdata('email') : 0;
 
 
 		if(empty($this->id)&& empty($this->email)){
@@ -85,13 +85,8 @@ class Provider extends CI_Controller {
 
 	public function deletarDadosBancarios(){
 
-		if( isset($_POST['conta']) ){
-		
-			$conta = addslashes($_POST['conta']);
-
-			if($this->Provider_model->buscar('tb_provider_bank', 'account' ,$conta)){
-				echo json_encode(array("status" => $this->Provider_model->deletar('tb_provider_bank', 'account', $conta, array("deleted_at" => date("Y-m-d H:m:s")))));
-			}
+		if($this->Provider_model->buscar($this->id)){
+			echo json_encode(array("status" => $this->Provider_model->deletarDados('tb_provider_bank', 'account', $this->id, array("deleted_at" => date("Y-m-d H:m:s")))));
 		} else {
 			echo json_encode(array("status" => false, "description" => "Por favor, enviar o numeoro da conta para realizar a exclusao"));
 		} 
